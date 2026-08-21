@@ -256,4 +256,20 @@ button {
   .msg {
     max-width: 90%;
   }
+  /* Agent tags */
+.agent-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  }
+
+.agent-tag {
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  }
 }
