@@ -1,21 +1,92 @@
 import "./App.css";
 
-function App() {
-  return (
-    <div className="app">
-      <nav className="navbar">
-        <div className="logo">
-          <span className="logo-mark">J</span>
-          <span>JusGBot</span>
-        </div>
+function Chat() {
+  const [messages, setMessages] = useState([
+    { role: 'bot', text: 'Hi! I am JusGBot. How can I help?' }
+  ])
+  const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
 
-        <div className="nav-links">
-          <a href="#features">Features</a>
-          <a href="#how-it-works">How It Works</a>
-          <a href="#pricing">Pricing</a>
-          <button className="login-btn">Log In</button>
-          <button className="signup-btn">Get Started</button>
-        </div>
+  const send = async () => {
+    const text = input.trim()
+    if (!text || loading) return
+
+    const userMsg = { role: 'user', text }
+    setMessages((prev) => [...prev, userMsg])
+    setInput('')
+    setLoading(true)
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        setMessages((prev) => [...prev, {
+          role: 'bot',
+          text: data.reply,
+          agentsUsed: data.agentsUsed || [],
+        }])
+      } else {
+        setMessages((prev) => [...prev, {
+          role: 'bot',
+          text: `Sorry, something went wrong: ${data.error || 'unknown error'}`,
+        }])
+      }
+    } catch (err) {
+      setMessages((prev) => [...prev, { role: 'bot', text: 'Sorry, I could not reach the server.' }])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="chat-page">
+      <header className="page-header">
+        <h2>JusGBot Chat</h2>
+        <p className="subtitle">Ask me anything</p>
+      </header>
+
+      <div className="chat-window">
+        {messages.map((m, i) => (
+          <div key={i} className={`msg ${m.role}`}>
+            <span className="msg-label">{m.role === 'bot' ? 'JusGBot' : 'You'}</span>
+            <p>{m.text}</p>
+            {m.agentsUsed && m.agentsUsed.length > 0 && (
+              <div className="agent-tags">
+                {m.agentsUsed.map((a, j) => (
+                  <span key={j} className="agent-tag">{a}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+        {loading && (
+          <div className="msg bot">
+            <span className="msg-label">JusGBot</span>
+            <p>Thinking...</p>
+          </div>
+        )}
+      </div>
+
+      <div className="chat-input">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && send()}
+          placeholder="Type your message..."
+          disabled={loading}
+        />
+        <button onClick={send} disabled={loading}>Send</button>
+      </div>
+    </div>
+  )
+}
       </nav>
 
       <main>
