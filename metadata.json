@@ -1,0 +1,6 @@
+{
+  "name": "JusGBot Multi-Agent AI",
+  "description": "Multi-agent AI assistant powered by NVIDIA NIM & Gemini with 16 specialized domain agents (including Cosmos video generation), intelligent routing brain, per-agent API key routing, and live model diagnostics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
